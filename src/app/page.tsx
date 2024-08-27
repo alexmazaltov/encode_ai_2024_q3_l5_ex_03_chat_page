@@ -1,5 +1,8 @@
 "use client";
 import { useState } from "react";
+import { Button } from "@components/ui/button";
+import { Input } from "@components/ui/input";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@components/ui/card";
 
 export default function Home() {
   const [message, setMessage] = useState("");
@@ -7,44 +10,82 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ messages: [{ role: "user", content: message }] }),
-    });
-    const data = await res.json();
-    setResponse(data.content);
+    setResponse("Loading...");
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ messages: [{ role: "user", content: message }] }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (error) {
+        console.error("Failed to parse JSON:", text);
+        throw new Error("Invalid JSON response from server");
+      }
+
+      setResponse(data.content);
+    } catch (error) {
+      console.error("Error:", error);
+      setResponse(`Error: ${error.message}`);
+    }
     setMessage("");
   };
 
   return (
-    <main className="min-h-screen bg-gray-900 py-6 flex flex-col justify-center sm:py-12">
-      <h1 className="text-4xl font-bold text-center text-gray-100 mb-8">Chat Page</h1>
-      <section className="max-w-3xl mx-auto w-full">
-        <div className="bg-gray-800 shadow-lg rounded px-8 pt-6 pb-8 mb-4">
-          {!response && (
-            <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-              <input
+    <main className="min-h-screen bg-gradient-to-b from-blue-100 to-white py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold text-center text-blue-900 mb-8">Welcome to ALEF INVEST™</h1>
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>About Us</CardTitle>
+            <CardDescription>Solving core's security issues / Unix / Windows / Mobile / Web3 / Blockchain</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">ALEF INVEST™ is a leading company in cybersecurity and blockchain solutions. We specialize in providing cutting-edge security measures for various platforms including Unix, Windows, Mobile, Web3, and Blockchain technologies.</p>
+            <p className="mb-4">Our team of experts is dedicated to solving complex security challenges and ensuring the safety of your digital assets.</p>
+            <p className="font-semibold">Contact Information:</p>
+            <p>CEO: Oleksii Bondarenko</p>
+            <p>Address: Ozerna str. 6 / Artemivka / 08336</p>
+            <p>Phone: +38 (066) 790 7666</p>
+            <p>Website: <a href="http://www.alefinvest.xyz/" className="text-blue-600 hover:underline">www.alefinvest.xyz</a></p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Chat with Us</CardTitle>
+            <CardDescription>Ask us anything about our services</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Enter your message"
-                className="px-3 py-2 bg-gray-700 text-white rounded"
+                className="w-full"
               />
-              <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                Send
-              </button>
+              <Button type="submit" className="w-full">Send</Button>
             </form>
-          )}
+          </CardContent>
           {response && (
-            <div className="mt-4 p-3 bg-gray-700 text-white rounded">
-              <p>{response}</p>
-            </div>
+            <CardFooter>
+              <div className="w-full p-4 bg-gray-100 rounded-md">
+                <p className="text-gray-800">{response}</p>
+              </div>
+            </CardFooter>
           )}
-        </div>
-      </section>
+        </Card>
+      </div>
     </main>
   );
 }

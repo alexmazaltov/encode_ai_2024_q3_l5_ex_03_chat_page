@@ -7,21 +7,21 @@ import Footer from "@components/common/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "03-Chat-Page - Encode AI Bootcamp (Q3 2024)",
-  description: "Creating a Simple Chat Page",
+  title: "ALEF INVEST™ - Cybersecurity and Blockchain Solutions",
+  description: "ALEF INVEST™ provides cutting-edge security solutions for Unix, Windows, Mobile, Web3, and Blockchain technologies.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex flex-col min-h-screen ">
+        <div className="flex flex-col min-h-screen">
           <Header />
-          <main>{children}</main>
+          <main className="flex-grow">{children}</main>
           <Footer />
         </div>
       </body>
